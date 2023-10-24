@@ -32,7 +32,7 @@ class Todo {
                     <button onclick="todo.saveEdit()">Zapisz</button></span>
                     <button onclick="todo.cancelEdit()">X</button>
                 `;
-                editDiv.onclick = () => this.cancelEdit();
+                //editDiv.onclick = () => this.cancelEdit();
                 container.appendChild(editDiv);
             }else{
                 taskDiv.innerHTML = `<span><input type="checkbox" ${task.isCompleted ? 'checked' : ''} onclick="todo.toggleTaskCompletion('${task.id}'); event.stopPropagation();"> ${highlightedName}</span> <span>${formattedDate}</span>
@@ -45,10 +45,11 @@ class Todo {
     
 
     addTask() {
+        const currentDate = Date.now();
         const taskName = document.getElementById('task').value;
         const deadline = document.getElementById('deadline').value;
 
-        if (taskName.length < 3 || taskName.length > 255 || (deadline && new Date(deadline) <= new Date())) {
+        if (taskName.length < 3 || taskName.length > 255 || (deadline && Date.parse(deadline) <= currentDate)) {
             return;
         }
 
@@ -73,12 +74,16 @@ class Todo {
         this.draw();
     }
     saveEdit() {
+        const currentDate = Date.now();
         const nameInput = document.getElementById('edit-task-name');
         const dateInput = document.getElementById('edit-task-date');
-    
+        
+        
+        if (nameInput.value.length < 3 || nameInput.value.length > 255 || (dateInput.value && Date.parse(dateInput.value) <= currentDate)) {
+            return;
+        }
         this.currentEditingTask.name = nameInput.value;
         this.currentEditingTask.deadline = dateInput.value || '---';
-    
         this.currentEditingTask = null;
         this.saveTasksToLocalStorage();
         this.draw();
